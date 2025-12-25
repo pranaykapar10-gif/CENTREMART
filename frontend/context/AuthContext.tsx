@@ -21,6 +21,7 @@ interface AuthContextType {
   signup: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   refreshToken: () => Promise<boolean>;
+  updateProfile: (data: Partial<User>) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,30 +46,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Login handler
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const login = useCallback(async (email: string, _password: string) => {
+  const login = useCallback(async (email: string, password: string) => {
     try {
       setIsLoading(true);
 
-      // TODO: Call actual backend login endpoint
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
-      // const data = await response.json();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-      // Mock login - generate tokens
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Login failed');
+      }
+
+      const data = await response.json();
+      const { user: userData, token } = data;
+
       const mockUser: User = {
-        id: '1',
-        email,
-        name: email.split('@')[0],
-        role: 'customer',
+        id: userData.id.toString(),
+        email: userData.email,
+        name: userData.firstName ? `${userData.firstName} ${userData.lastName}` : userData.email.split('@')[0],
+        role: userData.role || 'customer',
       };
 
-      const accessToken = generateMockToken(mockUser);
-      const refreshToken = generateMockRefreshToken(mockUser);
-
-      storeTokens(accessToken, refreshToken, mockUser);
+      storeTokens(token, token, mockUser); // Using same token for refresh for now as mock
       setUser(mockUser);
       setIsAuthenticated(true);
 
@@ -83,34 +86,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   // Signup handler
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const signup = useCallback(async (name: string, email: string, _password: string) => {
+  const signup = useCallback(async (name: string, email: string, password: string) => {
     try {
       setIsLoading(true);
 
-      // TODO: Call actual backend signup endpoint
-      // const response = await fetch('/api/auth/signup', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ name, email, password }),
-      // });
-      // const data = await response.json();
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password }),
+      });
 
-      // Mock signup - auto login user
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Signup failed');
+      }
+
+      const data = await response.json();
+      const { user: userData, token } = data;
+
       const mockUser: User = {
-        id: Math.random().toString(36).substring(7),
-        email,
-        name,
-        role: 'customer',
+        id: userData.id.toString(),
+        email: userData.email,
+        name: userData.name,
+        role: userData.role || 'customer',
       };
 
-      const accessToken = generateMockToken(mockUser);
-      const refreshToken = generateMockRefreshToken(mockUser);
-
-      storeTokens(accessToken, refreshToken, mockUser);
+      storeTokens(token, token, mockUser);
       setUser(mockUser);
       setIsAuthenticated(true);
-
-      console.log('Signup successful:', mockUser);
     } catch (error) {
       console.error('Signup failed:', error);
       throw error;
@@ -118,6 +121,37 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setIsLoading(false);
     }
   }, []);
+
+  // Update profile handler
+  const updateProfile = useCallback(async (data: Partial<User>) => {
+    try {
+      const token = getAccessToken();
+      if (!token) throw new Error('No access token');
+
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/auth/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
+
+      const updatedUser = await response.json();
+      
+      // Update local state and storage
+      const newUser = { ...user, ...updatedUser } as User;
+      setUser(newUser);
+      localStorage.setItem('user', JSON.stringify(newUser));
+    } catch (error) {
+      console.error('Update profile failed:', error);
+      throw error;
+    }
+  }, [user]);
 
   // Logout handler
   const logout = useCallback(() => {
@@ -151,6 +185,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     signup,
     logout,
     refreshToken,
+    updateProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

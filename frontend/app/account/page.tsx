@@ -2,8 +2,8 @@
 
 import { useAuth } from '@/context/AuthContext';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { useState } from 'react';
-import { User, Package, Heart, MapPin, Settings, LogOut, Edit2, Save, X } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { User, Package, Heart, MapPin, Settings, LogOut, Edit2, Save, X, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AccountPage() {
@@ -15,72 +15,90 @@ export default function AccountPage() {
 }
 
 function AccountContent() {
-  const { user, logout } = useAuth();
+  const { user, logout, updateProfile } = useAuth();
   const [activeTab, setActiveTab] = useState<'profile' | 'orders' | 'wishlist' | 'addresses' | 'settings'>('profile');
   const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     email: user?.email || '',
-    phone: '+1 (555) 000-0000',
-    avatar: '👤',
+    phone: user?.phone || '',
+    avatar: user?.avatar_url || '👤',
   });
 
-  // Mock order data
-  const orders = [
-    {
-      id: 'ORD-123456789',
-      date: 'Nov 1, 2025',
-      total: '$124.99',
-      status: 'Delivered',
-      items: 3,
-    },
-    {
-      id: 'ORD-987654321',
-      date: 'Oct 28, 2025',
-      total: '$89.50',
-      status: 'In Transit',
-      items: 2,
-    },
-    {
-      id: 'ORD-555555555',
-      date: 'Oct 20, 2025',
-      total: '$256.00',
-      status: 'Delivered',
-      items: 5,
-    },
-  ];
+  const [orders, setOrders] = useState<any[]>([]);
+  const [wishlist, setWishlist] = useState<any[]>([]);
+  const [addresses, setAddresses] = useState<any[]>([]);
 
-  // Mock wishlist data
-  const wishlist = [
-    { id: 1, name: 'Premium Headphones', price: '$199.99', category: 'Electronics', emoji: '🎧' },
-    { id: 2, name: 'Wireless Charger', price: '$49.99', category: 'Accessories', emoji: '🔌' },
-    { id: 3, name: 'Phone Case', price: '$24.99', category: 'Accessories', emoji: '📱' },
-    { id: 4, name: 'USB-C Cable', price: '$14.99', category: 'Cables', emoji: '🔗' },
-  ];
+  useEffect(() => {
+    if (activeTab === 'orders') {
+      fetchOrders();
+    } else if (activeTab === 'wishlist') {
+      fetchWishlist();
+    }
+  }, [activeTab]);
 
-  // Mock addresses data
-  const addresses = [
-    {
-      id: 1,
-      type: 'Home',
-      street: '123 Main Street',
-      city: 'San Francisco, CA 94102',
-      phone: '+1 (555) 000-0000',
-      default: true,
-    },
-    {
-      id: 2,
-      type: 'Work',
-      street: '456 Business Ave',
-      city: 'San Francisco, CA 94104',
-      phone: '+1 (555) 111-1111',
-      default: false,
-    },
-  ];
+  const fetchOrders = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/orders/my-orders`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setOrders(data);
+    } catch (error) {
+      console.error('Failed to fetch orders:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const handleSaveProfile = () => {
-    console.log('Profile saved:', profileData);
-    setIsEditingProfile(false);
+  const fetchWishlist = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/wishlist`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const data = await response.json();
+      setWishlist(data);
+    } catch (error) {
+      console.error('Failed to fetch wishlist:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRemoveFromWishlist = async (productId: number) => {
+    try {
+      const token = localStorage.getItem('accessToken');
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/wishlist/${productId}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        setWishlist(wishlist.filter(item => item.product_id !== productId));
+      }
+    } catch (error) {
+      console.error('Failed to remove from wishlist:', error);
+    }
+  };
+
+  const handleSaveProfile = async () => {
+    try {
+      setIsLoading(true);
+      await updateProfile({
+        name: profileData.name,
+        phone: profileData.phone,
+        avatar_url: profileData.avatar
+      });
+      setIsEditingProfile(false);
+    } catch (error) {
+      console.error('Failed to save profile:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleLogout = () => {
@@ -114,7 +132,7 @@ function AccountContent() {
 
         {/* Tab Navigation */}
         <div className="mb-8 border-b border-gray-200">
-          <div className="flex gap-8">
+          <div className="flex gap-8 overflow-x-auto pb-2">
             <button onClick={() => setActiveTab('profile')} className={tabStyles('profile')}>
               <User size={20} className="inline mr-2" />
               Profile
@@ -140,8 +158,13 @@ function AccountContent() {
 
         {/* Tab Content */}
         <div className="grid grid-cols-1 gap-8">
-          {/* Profile Tab */}
-          {activeTab === 'profile' && (
+          {isLoading && (
+            <div className="flex justify-center py-12">
+              <Loader2 className="animate-spin text-blue-600" size={48} />
+            </div>
+          )}
+
+          {!isLoading && activeTab === 'profile' && (
             <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
               <div className="flex items-start justify-between mb-8">
                 <h2 className="text-2xl font-bold text-gray-900">Profile Information</h2>
@@ -180,8 +203,8 @@ function AccountContent() {
                       <input
                         type="email"
                         value={profileData.email}
-                        onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
+                        disabled
+                        className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
                       />
                     </div>
                     <div>
@@ -192,12 +215,6 @@ function AccountContent() {
                         onChange={(e) => setProfileData({ ...profileData, phone: e.target.value })}
                         className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:border-blue-500 focus:outline-none"
                       />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-bold text-gray-900 mb-2">Password</label>
-                      <button className="w-full px-4 py-3 border border-gray-300 rounded-lg hover:bg-gray-50 font-semibold text-gray-900 transition">
-                        Change Password
-                      </button>
                     </div>
                   </div>
 
@@ -227,19 +244,21 @@ function AccountContent() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <p className="text-sm text-gray-600">Full Name</p>
-                      <p className="text-lg font-semibold text-gray-900">{profileData.name}</p>
+                      <p className="text-lg font-semibold text-gray-900">{user?.name}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Email</p>
-                      <p className="text-lg font-semibold text-gray-900">{profileData.email}</p>
+                      <p className="text-lg font-semibold text-gray-900">{user?.email}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Phone</p>
-                      <p className="text-lg font-semibold text-gray-900">{profileData.phone}</p>
+                      <p className="text-lg font-semibold text-gray-900">{user?.phone || 'Not provided'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Member Since</p>
-                      <p className="text-lg font-semibold text-gray-900">January 2024</p>
+                      <p className="text-lg font-semibold text-gray-900">
+                        {user?.created_at ? new Date(user.created_at).toLocaleDateString() : 'January 2024'}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -247,8 +266,7 @@ function AccountContent() {
             </div>
           )}
 
-          {/* Orders Tab */}
-          {activeTab === 'orders' && (
+          {!isLoading && activeTab === 'orders' && (
             <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Order History</h2>
 
@@ -261,26 +279,26 @@ function AccountContent() {
                       <div className="grid grid-cols-1 md:grid-cols-5 gap-4 items-center">
                         <div>
                           <p className="text-xs text-gray-600">Order Number</p>
-                          <p className="font-bold text-gray-900">{order.id}</p>
+                          <p className="font-bold text-gray-900">{order.order_number}</p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-600">Order Date</p>
-                          <p className="font-semibold text-gray-900">{order.date}</p>
+                          <p className="font-semibold text-gray-900">{new Date(order.created_at).toLocaleDateString()}</p>
                         </div>
                         <div>
-                          <p className="text-xs text-gray-600">Items</p>
-                          <p className="font-semibold text-gray-900">{order.items} items</p>
+                          <p className="text-xs text-gray-600">Status</p>
+                          <p className="font-semibold text-gray-900 capitalize">{order.status}</p>
                         </div>
                         <div>
                           <p className="text-xs text-gray-600">Total</p>
-                          <p className="font-bold text-lg text-gray-900">{order.total}</p>
+                          <p className="font-bold text-lg text-gray-900">${order.total_amount}</p>
                         </div>
                         <div className="flex items-center justify-between">
                           <span
                             className={`px-3 py-1 rounded-full text-sm font-bold ${
-                              order.status === 'Delivered'
+                              order.status === 'delivered'
                                 ? 'bg-green-100 text-green-800'
-                                : order.status === 'In Transit'
+                                : order.status === 'shipped'
                                   ? 'bg-blue-100 text-blue-800'
                                   : 'bg-gray-100 text-gray-800'
                             }`}
@@ -302,8 +320,7 @@ function AccountContent() {
             </div>
           )}
 
-          {/* Wishlist Tab */}
-          {activeTab === 'wishlist' && (
+          {!isLoading && activeTab === 'wishlist' && (
             <div className="bg-white rounded-2xl border border-gray-200 p-8 shadow-sm">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">My Wishlist</h2>
 
@@ -313,12 +330,20 @@ function AccountContent() {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                   {wishlist.map((item) => (
                     <div key={item.id} className="border border-gray-200 rounded-lg p-4 hover:shadow-lg transition">
-                      <div className="text-4xl mb-3">{item.emoji}</div>
-                      <h3 className="font-bold text-gray-900 mb-1">{item.name}</h3>
-                      <p className="text-xs text-gray-600 mb-3">{item.category}</p>
+                      <div className="aspect-square bg-gray-100 rounded-lg mb-3 overflow-hidden">
+                        {item.image_url ? (
+                          <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-4xl">📦</div>
+                        )}
+                      </div>
+                      <h3 className="font-bold text-gray-900 mb-1 truncate">{item.name}</h3>
                       <div className="flex items-center justify-between">
-                        <p className="font-bold text-lg text-blue-600">{item.price}</p>
-                        <button className="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-3 rounded-lg transition">
+                        <p className="font-bold text-lg text-blue-600">${item.price}</p>
+                        <button 
+                          onClick={() => handleRemoveFromWishlist(item.product_id)}
+                          className="bg-red-50 hover:bg-red-100 text-red-600 font-bold py-2 px-3 rounded-lg transition"
+                        >
                           Remove
                         </button>
                       </div>

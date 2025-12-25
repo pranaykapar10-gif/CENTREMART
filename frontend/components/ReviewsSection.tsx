@@ -1,52 +1,85 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Star, ThumbsUp, ThumbsDown, Flag } from 'lucide-react';
 import ReviewModal, { ReviewSubmission } from './ReviewModal';
+import { apiGet, apiPost } from '@/lib/api';
 
 export interface Review {
   id: string;
   author: string;
   rating: number;
   title: string;
-  text: string;
-  date: string;
-  helpful: number;
-  notHelpful: number;
-  verified: boolean;
+  comment: string;
+  created_at: string;
+  helpful_count: number;
+  unhelpful_count: number;
+  is_verified_purchase: boolean;
 }
 
 interface ReviewsSectionProps {
+  productId: string;
   productName: string;
-  reviews: Review[];
-  averageRating: number;
-  totalReviews: number;
+  initialAverageRating: number;
+  initialTotalReviews: number;
 }
 
 export default function ReviewsSection({
+  productId,
   productName,
-  reviews: initialReviews,
-  averageRating,
-  totalReviews,
+  initialAverageRating,
+  initialTotalReviews,
 }: ReviewsSectionProps) {
-  const [reviews, setReviews] = useState<Review[]>(initialReviews);
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<'newest' | 'helpful' | 'rating-high' | 'rating-low'>('newest');
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
-  const handleReviewSubmit = (review: ReviewSubmission) => {
-    const newReview: Review = {
-      id: Math.random().toString(36).substring(7),
-      author: 'You',
+  useEffect(() => {
+    const fetchReviews = async () => {
+      setLoading(true);
+      const response = await apiGet<Review[]>(`/api/reviews/product/${productId}`);
+      if (response.success && response.data) {
+        setReviews(response.data);
+      }
+      setLoading(false);
+    };
+
+    if (productId) {
+      fetchReviews();
+    }
+  }, [productId]);
+
+  const handleReviewSubmit = async (review: ReviewSubmission) => {
+    const response = await apiPost<Review>('/api/reviews', {
+      productId,
       rating: review.rating,
       title: review.title,
-      text: review.text,
-      date: new Date().toLocaleDateString(),
-      helpful: 0,
-      notHelpful: 0,
-      verified: true,
-    };
-    setReviews([newReview, ...reviews]);
+      comment: review.text,
+    });
+
+    if (response.success && response.data) {
+      setReviews([response.data, ...reviews]);
+    } else {
+      alert(response.error || 'Failed to submit review');
+    }
+  };
+
+  const handleVote = async (reviewId: string, type: 'helpful' | 'unhelpful') => {
+    const response = await apiPost(`/api/reviews/${reviewId}/vote`, { type });
+    if (response.success) {
+      setReviews(reviews.map(r => {
+        if (r.id === reviewId) {
+          return {
+            ...r,
+            helpful_count: type === 'helpful' ? r.helpful_count + 1 : r.helpful_count,
+            unhelpful_count: type === 'unhelpful' ? r.unhelpful_count + 1 : r.unhelpful_count,
+          };
+        }
+        return r;
+      }));
+    }
   };
 
   let filteredReviews = reviews;
@@ -55,9 +88,9 @@ export default function ReviewsSection({
   }
 
   if (sortBy === 'newest') {
-    filteredReviews = [...filteredReviews].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    filteredReviews = [...filteredReviews].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
   } else if (sortBy === 'helpful') {
-    filteredReviews = [...filteredReviews].sort((a, b) => b.helpful - a.helpful);
+    filteredReviews = [...filteredReviews].sort((a, b) => b.helpful_count - a.helpful_count);
   } else if (sortBy === 'rating-high') {
     filteredReviews = [...filteredReviews].sort((a, b) => b.rating - a.rating);
   } else if (sortBy === 'rating-low') {
@@ -67,8 +100,10 @@ export default function ReviewsSection({
   const ratingDistribution = [5, 4, 3, 2, 1].map((rating) => ({
     rating,
     count: reviews.filter((r) => r.rating === rating).length,
-    percentage: (reviews.filter((r) => r.rating === rating).length / reviews.length) * 100,
+    percentage: reviews.length > 0 ? (reviews.filter((r) => r.rating === rating).length / reviews.length) * 100 : 0,
   }));
+
+  if (loading) return <div className="py-12 text-center">Loading reviews...</div>;
 
   return (
     <div className="mt-12 pt-8 border-t">
@@ -79,17 +114,17 @@ export default function ReviewsSection({
         <div className="md:col-span-1">
           <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
             <div className="text-center mb-6">
-              <div className="text-5xl font-black text-gray-900 mb-2">{averageRating.toFixed(1)}</div>
+              <div className="text-5xl font-black text-gray-900 mb-2">{initialAverageRating.toFixed(1)}</div>
               <div className="flex items-center justify-center gap-1 mb-2">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star
                     key={i}
                     size={20}
-                    className={i <= Math.round(averageRating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
+                    className={i <= Math.round(initialAverageRating) ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}
                   />
                 ))}
               </div>
-              <p className="text-sm text-gray-600">Based on {totalReviews} reviews</p>
+              <p className="text-sm text-gray-600">Based on {reviews.length} reviews</p>
             </div>
 
             {/* Rating Distribution */}

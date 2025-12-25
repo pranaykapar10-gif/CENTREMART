@@ -6,12 +6,48 @@ import { useState, useEffect } from 'react';
 
 export default function AdminDashboard() {
   const [snapshotVersion, setSnapshotVersion] = useState<number | null>(null);
+  const [healthData, setHealthData] = useState<any>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+
+  const handleSync = async () => {
+    setIsSyncing(true);
+    try {
+      const token = localStorage.getItem('accessToken');
+      const res = await fetch('/api/admin/build-snapshot', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert('Sync successful!');
+        // Refresh manifest
+        const mres = await fetch('/api/data/manifest.json');
+        const mdata = await mres.json();
+        setSnapshotVersion(mdata.currentVersion);
+      } else {
+        alert(`Sync failed: ${data.error}`);
+      }
+    } catch (e) {
+      alert('Sync failed');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   useEffect(() => {
+    // Fetch manifest
     fetch('/api/data/manifest.json')
       .then(res => res.json())
       .then(data => setSnapshotVersion(data.currentVersion))
       .catch(() => setSnapshotVersion(null));
+
+    // Fetch backend health
+    fetch('/health')
+      .then(res => res.json())
+      .then(data => setHealthData(data))
+      .catch(() => setHealthData(null));
   }, []);
 
   // Mock KPI data
@@ -119,6 +155,26 @@ export default function AdminDashboard() {
             </div>
             <div className="text-xs text-gray-400 ml-2 border-l pl-2">
               Updates every 5m
+            </div>
+          </div>
+        </div>
+
+        {/* Sync Button */}
+        <div className="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            <button 
+              onClick={handleSync}
+              disabled={isSyncing}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+            >
+              <RefreshCw size={18} className={isSyncing ? 'animate-spin' : ''} />
+              {isSyncing ? 'Syncing...' : 'Sync Now'}
+            </button>
+            <div className="text-right">
+              <p className="text-sm text-gray-500">Last Snapshot</p>
+              <p className="font-mono text-xs font-bold text-blue-600">
+                {snapshotVersion ? new Date(snapshotVersion).toLocaleString() : 'Loading...'}
+              </p>
             </div>
           </div>
         </div>

@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Heart, ShoppingCart, Share2, Star } from 'lucide-react';
 import { useCart } from '@/hooks/useCart';
+import { apiGet, apiPost } from '@/lib/api';
+import ReviewsSection from '@/components/ReviewsSection';
 
 interface ProductDetail {
   id: number;
@@ -21,48 +23,56 @@ interface ProductDetail {
 }
 
 export default function ProductDetail({ params }: { params: { id: string } }) {
+  const [product, setProduct] = useState<ProductDetail | null>(null);
+  const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState('Black');
-  const [selectedSize, setSelectedSize] = useState('M');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [isWishlisted, setIsWishlisted] = useState(false);
   const [activeTab, setActiveTab] = useState<'description' | 'reviews' | 'shipping'>('description');
   const { addItem } = useCart();
 
-  const product: ProductDetail = {
-    id: parseInt(params.id || '1', 10),
-    name: 'Premium Wireless Headphones Pro',
-    price: 299.99,
-    discount_price: 199.99,
-    rating: 4.8,
-    review_count: 1250,
-    description:
-      'Experience premium sound quality with our flagship wireless headphones. Featuring active noise cancellation, 40-hour battery life, and premium comfort for all-day wear.',
-    specifications: {
-      'Driver Size': '40mm',
-      'Frequency Response': '20Hz - 20kHz',
-      'Battery Life': '40 hours',
-      'Charging Time': '2 hours',
-      'Bluetooth Version': '5.0',
-      'Weight': '250g',
-    },
-    images: ['🎧', '🔊', '🎵', '🎚️'],
-    variants: [
-      { color: 'Black', sizes: ['S', 'M', 'L', 'XL'] },
-      { color: 'Silver', sizes: ['M', 'L', 'XL'] },
-      { color: 'Gold', sizes: ['S', 'M', 'L'] },
-    ],
-    inStock: true,
-    sku: 'WH-PRO-001',
-  };
+  useEffect(() => {
+    const fetchProduct = async () => {
+      setLoading(true);
+      const response = await apiGet<ProductDetail>(`/api/products/${params.id}`);
+      if (response.success && response.data) {
+        const data = response.data;
+        if (typeof data.specifications === 'string') {
+          try { data.specifications = JSON.parse(data.specifications); } catch { data.specifications = {}; }
+        }
+        if (!data.specifications) data.specifications = {};
+        
+        if (typeof data.images === 'string') {
+          try { data.images = JSON.parse(data.images); } catch { data.images = ['📦']; }
+        }
+        if (!data.images || data.images.length === 0) data.images = ['📦'];
 
-  const reviews = [
-    { id: 1, author: 'Alex P.', date: '1 week ago', rating: 5, comment: 'Amazing sound and comfort.' },
-    { id: 2, author: 'Jamie L.', date: '2 weeks ago', rating: 5, comment: 'Battery lasts forever.' },
-    { id: 3, author: 'Taylor R.', date: '3 weeks ago', rating: 4, comment: 'Great ANC for the price.' },
-  ];
+        setProduct(data);
+        if (data.variants && data.variants.length > 0) {
+          setSelectedColor(data.variants[0].color);
+          if (data.variants[0].sizes && data.variants[0].sizes.length > 0) {
+            setSelectedSize(data.variants[0].sizes[0]);
+          }
+        }
+      }
+      setLoading(false);
+    };
+
+    const checkWishlist = async () => {
+      const response = await apiGet<{ isWishlisted: boolean }>(`/api/wishlist/check/${params.id}`);
+      if (response.success && response.data) {
+        setIsWishlisted(response.data.isWishlisted);
+      }
+    };
+
+    fetchProduct();
+    checkWishlist();
+  }, [params.id]);
 
   const handleAddToCart = () => {
+    if (!product) return;
     addItem({
       id: product.id.toString(),
       productId: product.id.toString(),
@@ -71,6 +81,19 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
       price: product.discount_price || product.price,
     });
   };
+
+  const toggleWishlist = async () => {
+    if (isWishlisted) {
+      const response = await apiPost(`/api/wishlist/remove`, { productId: params.id });
+      if (response.success) setIsWishlisted(false);
+    } else {
+      const response = await apiPost(`/api/wishlist/add`, { productId: params.id });
+      if (response.success) setIsWishlisted(true);
+    }
+  };
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading product...</div>;
+  if (!product) return <div className="min-h-screen flex items-center justify-center">Product not found</div>;
 
   const relatedProducts = Array.from({ length: 4 }, (_, i) => ({
     id: i + 1,
@@ -104,18 +127,26 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
           {/* Image Gallery */}
           <div>
             <div className="relative bg-gray-100 rounded-lg overflow-hidden mb-4 h-96 flex items-center justify-center">
-              <span className="text-8xl">{product.images[activeImageIndex]}</span>
+              {product.images[activeImageIndex].startsWith('http') ? (
+                <img src={product.images[activeImageIndex]} alt={product.name} className="object-contain h-full w-full" />
+              ) : (
+                <span className="text-8xl">{product.images[activeImageIndex]}</span>
+              )}
             </div>
             <div className="grid grid-cols-4 gap-4">
               {product.images.map((img, idx) => (
                 <button
                   key={idx}
                   onClick={() => setActiveImageIndex(idx)}
-                  className={`h-24 bg-gray-100 rounded-lg flex items-center justify-center text-4xl border-2 transition ${
+                  className={`h-24 bg-gray-100 rounded-lg flex items-center justify-center text-4xl border-2 transition overflow-hidden ${
                     activeImageIndex === idx ? 'border-blue-600' : 'border-transparent'
                   }`}
                 >
-                  {img}
+                  {img.startsWith('http') ? (
+                    <img src={img} alt={`${product.name} ${idx}`} className="object-cover h-full w-full" />
+                  ) : (
+                    img
+                  )}
                 </button>
               ))}
             </div>
@@ -135,67 +166,71 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
                 ))}
               </div>
               <span className="text-gray-600">
-                {product.rating} ({product.review_count} reviews)
+                {Number(product.rating).toFixed(1)} ({product.review_count} reviews)
               </span>
             </div>
 
             <div className="mb-8">
               <div className="flex items-baseline gap-4 mb-2">
                 <span className="text-4xl font-black text-gray-900">
-                  ${product.discount_price?.toFixed(2) || product.price.toFixed(2)}
+                  ${(Number(product.discount_price) || Number(product.price)).toFixed(2)}
                 </span>
                 {product.discount_price && (
-                  <span className="text-lg line-through text-gray-500">${product.price.toFixed(2)}</span>
+                  <span className="text-lg line-through text-gray-500">${Number(product.price).toFixed(2)}</span>
                 )}
               </div>
               {product.discount_price && (
                 <div className="inline-block bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-semibold">
-                  Save {Math.round(((product.price - product.discount_price) / product.price) * 100)}%
+                  Save {Math.round(((Number(product.price) - Number(product.discount_price)) / Number(product.price)) * 100)}%
                 </div>
               )}
             </div>
 
             <p className="text-gray-600 mb-8 leading-relaxed">{product.description}</p>
 
-            {/* Color Selector */}
-            <div className="mb-8">
-              <h3 className="text-sm font-bold text-gray-900 mb-3">Color</h3>
-              <div className="flex gap-3">
-                {product.variants.map((variant) => (
-                  <button
-                    key={variant.color}
-                    onClick={() => setSelectedColor(variant.color)}
-                    className={`px-4 py-2 rounded-lg border-2 transition ${
-                      selectedColor === variant.color
-                        ? 'border-blue-600 bg-blue-50 text-blue-900 font-semibold'
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                  >
-                    {variant.color}
-                  </button>
-                ))}
+            {/* Color Selector (Mocked if not in data) */}
+            {(product.variants || []).length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-sm font-bold text-gray-900 mb-3">Color</h3>
+                <div className="flex gap-3">
+                  {product.variants?.map((variant) => (
+                    <button
+                      key={variant.color}
+                      onClick={() => setSelectedColor(variant.color)}
+                      className={`px-4 py-2 rounded-lg border-2 transition ${
+                        selectedColor === variant.color
+                          ? 'border-blue-600 bg-blue-50 text-blue-900 font-semibold'
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
+                      {variant.color}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Size Selector */}
-            <div className="mb-8">
-              <h3 className="text-sm font-bold text-gray-900 mb-3">Size</h3>
-              <div className="flex gap-3">
-                {product.variants.find((v) => v.color === selectedColor)?.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`w-12 h-12 rounded-lg border-2 font-semibold transition ${
-                      selectedSize === size
-                        ? 'border-blue-600 bg-blue-50 text-blue-900'
-                        : 'border-gray-300 hover:border-gray-400'
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
+            {/* Size Selector (Mocked if not in data) */}
+            {(product.variants || []).length > 0 && (
+              <div className="mb-8">
+                <h3 className="text-sm font-bold text-gray-900 mb-3">Size</h3>
+                <div className="flex gap-3">
+                  {product.variants?.find((v) => v.color === selectedColor)?.sizes.map((size) => (
+                    <button
+                      key={size}
+                      onClick={() => setSelectedSize(size)}
+                      className={`w-12 h-12 rounded-lg border-2 font-semibold transition ${
+                        selectedSize === size
+                          ? 'border-blue-600 bg-blue-50 text-blue-900'
+                          : 'border-gray-300 hover:border-gray-400'
+                      }`}
+                    >
+                      {size}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quantity */}
             <div className="mb-8">
@@ -236,17 +271,16 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
             <div className="flex gap-4 mb-8">
               <button
                 onClick={handleAddToCart}
-                disabled={!product.inStock}
-                className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-lg font-bold hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 bg-purple-600 text-white font-bold py-4 rounded-lg hover:bg-purple-700 transition flex items-center justify-center gap-2"
               >
                 <ShoppingCart className="w-5 h-5" />
                 Add to Cart
               </button>
               <button
-                onClick={() => setIsWishlisted(!isWishlisted)}
-                className={`px-6 py-4 rounded-lg border-2 font-bold transition ${
+                onClick={toggleWishlist}
+                className={`px-6 py-4 rounded-lg border-2 transition ${
                   isWishlisted
-                    ? 'border-red-500 bg-red-50 text-red-600'
+                    ? 'bg-red-50 border-red-200 text-red-600'
                     : 'border-gray-300 hover:border-gray-400'
                 }`}
               >
@@ -299,6 +333,7 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
           </div>
         </div>
 
+
         {/* Tabs */}
         <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden mt-8">
           <div className="flex border-b border-gray-200">
@@ -345,26 +380,12 @@ export default function ProductDetail({ params }: { params: { id: string } }) {
             )}
 
             {activeTab === 'reviews' && (
-              <div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Customer Reviews</h3>
-                <div className="space-y-6">
-                  {reviews.map((review) => (
-                    <div key={review.id} className="pb-6 border-b border-gray-200 last:border-0">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <p className="font-bold text-gray-900">{review.author}</p>
-                          <p className="text-sm text-gray-600">{review.date}</p>
-                        </div>
-                        <div className="text-yellow-400">{'★'.repeat(review.rating)}</div>
-                      </div>
-                      <p className="text-gray-700">{review.comment}</p>
-                    </div>
-                  ))}
-                </div>
-                <button className="mt-8 w-full bg-purple-600 text-white font-bold py-3 rounded-lg hover:bg-purple-700 transition">
-                  Write a Review
-                </button>
-              </div>
+              <ReviewsSection 
+                productId={product.id.toString()}
+                productName={product.name}
+                initialAverageRating={product.rating}
+                initialTotalReviews={product.review_count}
+              />
             )}
 
             {activeTab === 'shipping' && (

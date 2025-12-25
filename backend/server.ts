@@ -3,6 +3,16 @@ import cors from 'cors';
 import helmet from 'helmet';
 import dotenv from 'dotenv';
 import { Pool, PoolClient } from 'pg';
+import authRoutes from './routes/auth';
+import productsRoutes from './routes/products';
+import cartRoutes from './routes/cart';
+import paymentsRoutes from './routes/payments';
+import ordersRoutes from './routes/orders';
+import reviewsRoutes from './routes/reviews';
+import wishlistRoutes from './routes/wishlist';
+import { exec } from 'child_process';
+import path from 'path';
+import { verifyToken, isAdmin } from './middleware/auth';
 
 dotenv.config();
 
@@ -63,9 +73,18 @@ app.get('/health', async (req: Request, res: Response) => {
     await client.query('SELECT NOW()');
     client.release();
     
+    // Check snapshot status
+    const snapshotResult = await pgPool.query('SELECT version, updated_at FROM products_snapshot WHERE id = 1');
+    const metricsResult = await pgPool.query('SELECT * FROM snapshot_metrics ORDER BY created_at DESC LIMIT 1');
+
     res.json({
       status: 'API is running',
       database: 'connected',
+      snapshot: {
+        last_version: snapshotResult.rows[0]?.version,
+        last_updated: snapshotResult.rows[0]?.updated_at,
+        last_metrics: metricsResult.rows[0],
+      },
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
@@ -78,8 +97,37 @@ app.get('/health', async (req: Request, res: Response) => {
 });
 
 // ============================================================================
-// ROUTES (Will be added as we build them)
+// ADMIN ROUTES
 // ============================================================================
+
+app.post('/api/admin/build-snapshot', verifyToken, isAdmin, (req: Request, res: Response) => {
+  const scriptPath = path.join(__dirname, 'supabase-edge', 'snapshot-builder', 'ci-run.js');
+  
+  console.log(`Triggering snapshot build: node ${scriptPath}`);
+  
+  exec(`node ${scriptPath}`, {
+    env: { ...process.env, FORCE: '1' }
+  }, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`Build error: ${error.message}`);
+      return res.status(500).json({ error: 'Build failed', details: stderr });
+    }
+    console.log(`Build success: ${stdout}`);
+    res.json({ message: 'Snapshot build triggered successfully', output: stdout });
+  });
+});
+
+// ============================================================================
+// ROUTES
+// ============================================================================
+
+app.use('/api/auth', authRoutes);
+app.use('/api/products', productsRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/api/payments', paymentsRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/reviews', reviewsRoutes);
+app.use('/api/wishlist', wishlistRoutes);
 
 app.get('/api', (req: Request, res: Response) => {
   res.json({

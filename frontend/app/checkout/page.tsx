@@ -105,12 +105,51 @@ export default function CheckoutPage() {
 
   const handleSubmitOrder = async () => {
     setLoading(true);
-    // Simulate order processing
-    setTimeout(() => {
-      console.log('Order submitted:', checkoutData);
+    try {
+      const token = localStorage.getItem('token');
+      const orderData = {
+        items: items.map(item => ({
+          product_id: item.productId,
+          quantity: item.quantity,
+          price: item.price,
+          name: item.name,
+          sku: item.sku || ''
+        })),
+        shipping_address: {
+          line1: checkoutData.shippingAddress.address,
+          city: checkoutData.shippingAddress.city,
+          state: checkoutData.shippingAddress.state,
+          zip: checkoutData.shippingAddress.zipCode,
+          country: 'Nepal'
+        },
+        payment_method: checkoutData.paymentMethod === 'card' ? 'card' : 'cod',
+        subtotal,
+        shipping_cost: shippingCost,
+        tax_amount: tax,
+        total_amount: total,
+        customer_notes: ''
+      };
+
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000'}/api/orders`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!res.ok) throw new Error('Failed to place order');
+
+      const data = await res.json();
       clearCart();
-      router.push('/checkout/confirmation');
-    }, 1500);
+      router.push(`/order-success?id=${data.orderNumber}`);
+    } catch (error) {
+      console.error('Order Error:', error);
+      alert('Failed to place order. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Calculate totals
