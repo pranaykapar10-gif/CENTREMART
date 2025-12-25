@@ -1,0 +1,49 @@
+name: Snapshot Builder
+
+on:
+  schedule:
+    # every 5 minutes
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}
+  push:
+    branches:
+      - main
+
+concurrency:
+  group: snapshot-builder
+  cancel-in-progress: true
+
+jobs:
+  build-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install snapshot-builder deps
+        working-directory: backend/supabase-edge/snapshot-builder
+        run: npm ci
+
+      - name: Run snapshot builder
+        working-directory: backend/supabase-edge/snapshot-builder
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SNAPSHOT_BUCKET: ${{ secrets.SNAPSHOT_BUCKET || 'github copilot' }}
+          DIFF_THRESHOLD: ${{ secrets.DIFF_THRESHOLD || '100' }}
+        run: |
+          node ci-run.js
+
+      - name: List bucket manifest
+        working-directory: backend/supabase-edge/snapshot-builder
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          SNAPSHOT_BUCKET: ${{ secrets.SNAPSHOT_BUCKET || 'github copilot' }}
+        run: |
+          node -e "(async()=>{const {createClient}=require('@supabase/supabase-js');const s=createClient(process.env.SUPABASE_URL,process.env.SUPABASE_SERVICE_ROLE_KEY,{global:{headers:{'x-supabase-admin':'true'}}});const r=await s.storage.from(process.env.SNAPSHOT_BUCKET||'github copilot').download('manifest.json').catch(()=>({data:null}));if(r.data){const b=await r.data.arrayBuffer();console.log(String.fromCharCode(...new Uint8Array(b))); }else{console.log('no manifest');}})()"

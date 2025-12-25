@@ -1,0 +1,1229 @@
+PROFESSIONAL & MODERN E-COMMERCE PLATFORM
+
+Goal
+----
+Build a production-ready, feature-rich e-commerce platform with gorgeous UI, professional design,
+and complete admin control. Simple tech stack, complex features, beautiful experience.
+
+Tech Stack (SIMPLE & PROVEN)
+----------------------------
+- Frontend: Next.js (App Router), React 18+, TypeScript, Tailwind CSS, shadcn/ui, Framer Motion
+- Backend: Node.js + Express + TypeScript
+- Database: PostgreSQL + simple connection pooling
+- Auth: JWT tokens (no Redis needed)
+- Payments: Stripe (test mode works fine)
+- Email: Resend (simple API)
+- File Storage: S3-compatible (local dev) or AWS S3 (production)
+- UI Components: shadcn/ui, Radix UI, Lucide Icons
+- Animations: Framer Motion for smooth interactions
+- Forms: React Hook Form + Zod validation
+- State: Zustand for simple state management
+- Deployment: Vercel (frontend) + Railway/Render (backend)
+
+================================================================================
+PHASE 1: FOUNDATION & GORGEOUS UI (Week 1-2)
+================================================================================
+
+HOMEPAGE - Professional & Modern Design
+----------------------------------------
+✓ Hero Banner (Full-width video/image background)
+  - Headline + CTA button with hover animations
+  - Semi-transparent overlay for text readability
+  - Parallax scroll effect
+  - Mobile-optimized (responsive video)
+  - Optional: Animated text transitions
+
+✓ Product Showcase Section
+  - Featured products carousel with auto-play
+  - Hover: image zoom, product details overlay
+  - "Add to Cart" button with animation feedback
+  - Price, rating, discount badge overlay
+  - Smooth transitions between slides
+
+✓ Category Cards (Grid)
+  - Large, clickable category tiles with background images
+  - Icon + category name overlays
+  - Hover: brightness increase, scale animation
+  - Responsive: 4 cols desktop, 2 cols mobile
+
+✓ Testimonials Section
+  - Customer review cards with avatars
+  - Star ratings, review text, customer name
+  - Carousel that auto-rotates
+  - Responsive grid layout
+
+✓ Trust & Social Proof
+  - "Trusted by X+ customers" badge with icons
+  - Free shipping banner
+  - 30-day return guarantee badge
+  - Newsletter subscription box with email input
+
+✓ Footer (Professional)
+  - 4-column layout: Company, Support, Legal, Social
+  - Newsletter signup in footer
+  - Payment method icons (Visa, Mastercard, PayPal)
+  - Copyright + links
+  - Mobile: Collapsible sections
+
+✓ Navigation Bar
+  - Sticky header with logo, search, categories dropdown
+  - Cart icon with item count badge
+  - Account icon/dropdown menu
+  - Mobile: Hamburger menu with slide-out
+  - Search bar with dropdown suggestions
+
+
+SHOP / CATALOG PAGE - Advanced Filtering
+-----------------------------------------
+✓ Sidebar Filters
+  - Product categories (checkbox tree)
+  - Price range slider (min-max with input fields)
+  - Brand filter (checkboxes)
+  - Size/Color filters (visual swatches)
+  - Rating filter (star filter)
+  - "In Stock" toggle
+  - "Clear all filters" button
+  - Filters persist on URL for sharing
+
+✓ Main Product Grid
+  - Responsive: 4 cols desktop, 2 cols tablet, 1 col mobile
+  - Product cards with:
+    * Product image with hover zoom
+    * Product name (truncated)
+    * Star rating + review count
+    * Price (with strikethrough for discounts)
+    * Discount percentage badge
+    * "In Stock" / "Low Stock" badge
+    * Hover: Quick view button + Add to wishlist
+    * Add to cart button with animation
+
+✓ Sorting Options
+  - Sort dropdown: Relevance, Price (low-high), Price (high-low), Newest, Top Rated
+  - View toggle: Grid (4 cols) / List view
+
+✓ Pagination
+  - Page numbers at bottom
+  - "Load more" button option
+  - Items per page selector (12, 24, 48)
+
+✓ Mobile Optimization
+  - Collapsible filters (accordion)
+  - Drawer/modal for sorting
+  - Single column product grid
+  - Touch-friendly tap targets
+
+
+PRODUCT DETAIL PAGE - Rich & Interactive
+-----------------------------------------
+✓ Product Gallery
+  - Large main image (centered, high-res)
+  - Thumbnail carousel below (swipeable mobile)
+  - Image zoom on hover (desktop)
+  - Image lazy loading + blur placeholder
+  - Fullscreen image viewer modal
+
+✓ Product Information
+  - Product name (large, bold)
+  - Star rating (with review count, clickable to reviews)
+  - Price display
+    * Original price (strikethrough if discount)
+    * Current price (highlight in green)
+    * Discount percentage badge
+  - Stock status: "In Stock" / "Low Stock (3 left)" / "Out of Stock"
+  - Description (truncated with "Read more" expansion)
+  - Key features/specs list
+
+✓ Product Options
+  - Color swatches (clickable, shows selected)
+  - Size selector (dropdown or buttons: S, M, L, XL)
+  - Quantity selector (+/- buttons with input)
+  - Add to Cart button (large, prominent color)
+  - Add to Wishlist button (heart icon)
+  - Share product buttons (Facebook, Twitter, Copy link)
+
+✓ Additional Sections
+  - Shipping & Returns info (expandable)
+  - Product specifications table
+  - Rating breakdown (5★ 70%, 4★ 20%, etc.)
+  - Top customer reviews carousel
+  - "Frequently bought together" section (upsell)
+  - "Related products" carousel
+
+✓ Reviews Section
+  - Filter by rating
+  - Sort by: Newest, Most Helpful, Highest Rating
+  - Review cards with:
+    * Star rating + review title + date
+    * Reviewer name + verified purchase badge
+    * Review text (with "Read more" if long)
+    * Helpful votes (thumbs up/down)
+  - "Write a review" button (opens modal for logged-in users)
+  - Pagination for reviews
+
+
+SHOPPING CART - Clean & Clear
+------------------------------
+✓ Cart Header
+  - "Your Cart" title
+  - Item count badge
+  - Continue shopping link
+
+✓ Cart Items List
+  - Each item shows:
+    * Product image (thumbnail)
+    * Product name + color/size selected
+    * Unit price
+    * Quantity controls (+/- buttons)
+    * Line total price
+    * Remove button (trash icon)
+    * Save for later button
+  - Swipe to delete on mobile
+
+✓ Cart Summary (Sticky)
+  - Subtotal
+  - Shipping estimate (calculated)
+  - Discount (if coupon applied)
+  - Tax (if calculated)
+  - Total (large, bold)
+  - Checkout button (prominent CTA)
+  - Continue shopping button
+
+✓ Empty Cart State
+  - Empty cart icon
+  - "Your cart is empty" message
+  - "Continue shopping" button
+  - Featured products carousel (upsell)
+
+✓ Coupon Code Section
+  - Input field for coupon code
+  - "Apply" button
+  - Display applied coupon with remove option
+  - Error/success messages
+
+
+AUTH PAGES - Modern & Trustworthy
+----------------------------------
+✓ Login Page
+  - Centered form card
+  - Email input + password input
+  - "Remember me" checkbox
+  - "Forgot password?" link
+  - Login button (large CTA)
+  - Social login buttons (Google, Facebook)
+  - "Don't have account? Sign up" link
+  - Background: subtle gradient or image
+
+✓ Signup Page
+  - Name input + email input + password input + confirm password
+  - Password strength indicator (visual bar)
+  - Terms & privacy checkbox
+  - Signup button
+  - Social signup buttons
+  - "Already have account? Login" link
+  - Email verification flow (after signup)
+
+✓ Password Reset
+  - Email input
+  - "Send reset link" button
+  - Success message: "Check your email"
+  - Reset token page: new password input + confirm + submit
+
+✓ Email Verification
+  - Show email address
+  - Resend code button (with countdown timer if rate-limited)
+  - Code input (6 digits or paste from email)
+  - Verify button
+
+
+================================================================================
+PHASE 2: ADVANCED FEATURES & ADMIN PANEL (Week 3-4)
+================================================================================
+
+CHECKOUT PAGE - Secure & Smooth
+--------------------------------
+✓ Step 1: Shipping Address
+  - Grouped form fields: Name, Email, Address, City, State, ZIP, Country
+  - Address autocomplete (Google Places API optional)
+  - Save address checkbox
+  - Previous addresses dropdown (if logged in)
+  - Step indicator at top (1 of 4)
+
+✓ Step 2: Billing & Shipping
+  - Shipping method options (Standard, Express, Overnight) with prices
+  - Billing address: Same as shipping (checkbox) or different
+  - Shipping method selection with descriptions
+
+✓ Step 3: Payment
+  - Stripe card element (hosted input)
+  - Cardholder name input
+  - Save card checkbox
+  - Coupon/discount code input
+  - Apply button
+  - Order summary on the right:
+    * Items breakdown
+    * Subtotal
+    * Shipping
+    * Discount
+    * Tax
+    * Total (prominent)
+
+✓ Step 4: Review & Confirm
+  - Order review: items, quantities, prices
+  - Shipping address
+  - Billing address
+  - Shipping method
+  - Payment method (last 4 digits)
+  - Edit buttons on each section
+  - Place order button (with loading state)
+  - Security badges (SSL, verified, etc.)
+
+✓ Mobile Optimization
+  - Full-width form inputs
+  - Clear step indicators
+  - Summary sticky at bottom
+  - Single column layout
+
+✓ Order Confirmation Page
+  - Success icon/animation
+  - "Order received!" message
+  - Order number (copyable)
+  - Order date & estimated delivery
+  - Items ordered (recap table)
+  - Shipping address
+  - Order total
+  - "Track order" button
+  - "Continue shopping" button
+  - Confirmation email sent message
+
+
+USER ACCOUNT PAGES - Full Control
+----------------------------------
+✓ Profile Page
+  - Avatar (editable)
+  - Name (editable)
+  - Email (editable)
+  - Phone (editable)
+  - Date of birth (editable)
+  - Preferred language
+  - Save changes button
+  - Change password section
+
+✓ Orders Page
+  - Order list table:
+    * Order number (clickable to detail)
+    * Order date
+    * Total amount
+    * Status (badge: Processing, Shipped, Delivered)
+    * Action buttons: View, Track, Cancel (if allowed)
+  - Filter by status
+  - Search by order number
+  - Pagination
+
+✓ Order Detail Page
+  - Order number + status
+  - Order date + expected delivery
+  - Items table: product, quantity, price, subtotal
+  - Billing address + shipping address
+  - Payment method used
+  - Order total breakdown
+  - Track shipment button (if shipped)
+  - Return/refund button (if eligible)
+  - Print invoice button
+  - Download invoice PDF
+
+✓ Wishlist Page
+  - Grid view of wishlist items
+  - Each card: image, name, price, rating
+  - "Add to Cart" button
+  - Remove from wishlist button
+  - Share wishlist link
+  - Empty state with shopping recommendations
+
+✓ Address Book
+  - List of saved addresses
+  - Edit / Delete buttons per address
+  - Set as default shipping/billing
+  - Add new address button
+  - Address type indicator (Home, Work, etc.)
+
+✓ Notifications Page
+  - Email notification preferences (checkboxes)
+  - SMS notification preferences
+  - Frequency settings
+  - Save preferences button
+
+✓ Settings/Security
+  - Change password
+  - Two-factor authentication setup (optional)
+  - Login activity log (IP, device, date)
+  - Connected apps/sessions
+  - Delete account option
+
+
+================================================================================
+ADMIN PANEL - Complete Business Control
+================================================================================
+
+ADMIN DASHBOARD - Comprehensive Analytics
+-------------------------------------------
+✓ Top KPIs (Cards)
+  - Total Revenue (this month, YoY change %)
+  - Total Orders (this month, YoY change %)
+  - Total Customers (this month, new customers)
+  - Average Order Value (AOV)
+  - Conversion Rate (%)
+  - Top Product Sales
+
+✓ Charts & Graphs
+  - Sales trend chart (line graph: last 30 days)
+  - Revenue breakdown (pie chart: by category)
+  - Top 10 products by sales (bar chart)
+  - Orders by status (donut chart: Processing, Shipped, Delivered, Cancelled)
+  - Customer acquisition chart (line graph)
+
+✓ Recent Activity Feed
+  - Latest orders (table: order #, customer, amount, status, time)
+  - Recent reviews
+  - New customers
+  - Low stock alerts
+
+✓ Admin Tools Quick Access
+  - Quick links: Add Product, View Orders, Manage Customers
+  - Shortcuts to common reports
+
+
+PRODUCTS MANAGEMENT - Full Product Control
+--------------------------------------------
+✓ Product List
+  - Table view:
+    * Product image (thumbnail)
+    * Product name (searchable, sortable)
+    * SKU
+    * Category
+    * Price
+    * Stock level (color-coded: green, yellow, red)
+    * Status (Active/Inactive toggle)
+    * Rating (average star rating)
+    * Sales count
+    * Created date
+    * Actions: Edit, Delete, Duplicate, View
+
+✓ Advanced Filters
+  - Search by name/SKU
+  - Filter by category
+  - Filter by status (Active, Inactive, Out of Stock)
+  - Filter by price range
+  - Filter by stock level
+  - Sort by: Name, Price, Stock, Sales, Rating, Date
+
+✓ Bulk Actions
+  - Select multiple products (checkbox)
+  - Bulk delete
+  - Bulk status change (activate/deactivate)
+  - Bulk price update
+  - Bulk export to CSV
+
+✓ Create/Edit Product Form
+  - Product name (required)
+  - Description (rich text editor with formatting)
+  - Category (dropdown/multi-select)
+  - Price (required)
+  - Cost price (for profit calculation)
+  - Discount price (optional)
+  - SKU (required, unique)
+  - Images:
+    * Multiple image upload (drag & drop)
+    * Set primary image
+    * Reorder images
+    * Image preview
+  - Variants section:
+    * Color options (with color picker)
+    * Size options (S, M, L, XL, etc.)
+    * Material/Type options
+    * Variant-specific pricing & stock
+  - Stock management:
+    * Stock quantity
+    * Low stock threshold (alert when below)
+    * Reorder quantity
+    * Warehouse locations
+  - SEO section:
+    * Meta title (with character counter)
+    * Meta description (with character counter)
+    * SEO keywords
+    * URL slug (auto-generate or manual)
+  - Related products (multi-select to cross-sell)
+  - Save & Publish button
+  - Save as Draft button
+  - Preview product button
+
+✓ Product Import/Export
+  - CSV import for bulk product upload
+  - CSV export of all products
+  - Import wizard with field mapping
+  - Validation of import data before upload
+
+
+ORDERS MANAGEMENT - Order Fulfillment Control
+----------------------------------------------
+✓ Orders List
+  - Table view:
+    * Order number (clickable)
+    * Order date
+    * Customer name (clickable to customer)
+    * Order total
+    * Status (badge: Pending, Processing, Shipped, Delivered, Cancelled)
+    * Payment status (Paid, Pending, Refunded)
+    * Fulfillment status
+    * Actions: View, Edit, Cancel, Print
+
+✓ Advanced Filters & Search
+  - Search by order number
+  - Filter by status
+  - Filter by payment status
+  - Filter by date range (date picker)
+  - Filter by customer (dropdown)
+  - Filter by amount range
+  - Sort by: Order date, Amount, Status
+
+✓ Order Detail View
+  - Order header: Order #, Date, Customer, Status
+  - Customer info card: Name, Email, Phone, Address
+  - Items table:
+    * Product image, name, SKU
+    * Quantity ordered
+    * Unit price
+    * Line total
+    * Actions: Remove item, Adjust quantity
+  - Billing address
+  - Shipping address
+  - Shipping method & tracking number
+  - Payment method & transaction ID
+  - Order notes (internal notes, customer notes)
+  - Order history timeline (status changes)
+  
+✓ Order Actions
+  - Update status dropdown (Pending → Processing → Shipped → Delivered)
+  - Add tracking number
+  - Send shipping confirmation email
+  - Print shipping label (PDF)
+  - Print packing slip
+  - Print invoice
+  - Refund order (full/partial)
+  - Cancel order
+  - Add/edit internal notes
+  - Add/edit customer notes
+
+✓ Order Timeline
+  - Status history with timestamps:
+    * Order created
+    * Payment received
+    * Order processing
+    * Order shipped (with tracking)
+    * Order delivered
+    * Any returns/refunds
+  - Admin actions log
+
+
+CUSTOMERS MANAGEMENT - Customer Insights
+-----------------------------------------
+✓ Customers List
+  - Table view:
+    * Customer name (clickable)
+    * Email
+    * Phone
+    * Total orders
+    * Lifetime value ($)
+    * Last order date
+    * Join date
+    * Status (Active, Inactive, VIP)
+    * Actions: View, Edit, Message, Delete
+
+✓ Advanced Filters
+  - Search by name/email
+  - Filter by join date range
+  - Filter by total spent (min-max)
+  - Filter by number of orders
+  - Filter by status
+  - Sort by: Name, Lifetime Value, Orders, Join Date
+
+✓ Customer Detail View
+  - Customer profile:
+    * Avatar (editable)
+    * Name, email, phone
+    * Join date
+    * VIP status (toggle)
+  - Statistics:
+    * Total orders
+    * Total spent
+    * Average order value
+    * Last order date
+    * Lifetime value
+  - Orders list (recent orders)
+    * Quick links to each order
+  - Addresses saved by customer
+  - Notes/tags on customer
+  - Communication history
+  - Add customer note button
+
+✓ Customer Actions
+  - Edit customer info
+  - Add manual note to customer
+  - Add customer tag/segment (VIP, At-Risk, etc.)
+  - View all orders
+  - Send message/email to customer
+  - Apply store credit
+  - Reset password
+  - Delete customer account
+
+
+INVENTORY MANAGEMENT - Stock Control
+-------------------------------------
+✓ Inventory Dashboard
+  - Total products count
+  - Products in stock
+  - Low stock products (count with warning)
+  - Out of stock products (count)
+  - Inventory value (total retail value)
+
+✓ Inventory List
+  - Table view:
+    * Product name
+    * SKU
+    * Current stock level
+    * Reserved/Pending stock
+    * Available stock
+    * Low stock threshold
+    * Reorder quantity
+    * Warehouse (if multi-warehouse)
+    * Actions: Edit, Adjust Stock, View History
+
+✓ Stock Adjustment
+  - Product search
+  - Current stock display
+  - Adjustment type (Add, Remove, Adjust)
+  - Quantity adjustment input
+  - Reason dropdown (Received stock, Damage, Theft, Correction, etc.)
+  - Notes field
+  - Save adjustment button
+  - Adjustment history for product
+
+✓ Low Stock Alerts
+  - List of products below threshold
+  - Recommended reorder quantity
+  - Reorder button (auto-generates purchase order)
+  - Configure low stock threshold globally
+  - Per-product threshold override
+
+✓ Multi-Warehouse Support
+  - View stock across locations
+  - Transfer stock between warehouses
+  - Warehouse-specific adjustments
+
+✓ Inventory Forecasting
+  - Sales velocity chart (units sold per day)
+  - Stock projection (when will run out at current pace)
+  - Reorder recommendation
+
+
+DISCOUNTS & PROMOTIONS - Marketing Control
+--------------------------------------------
+✓ Coupons List
+  - Table view:
+    * Coupon code
+    * Discount type (% or $)
+    * Discount amount
+    * Usage count / Usage limit
+    * Valid from - Valid to dates
+    * Status (Active/Inactive)
+    * Actions: Edit, Delete, Deactivate
+
+✓ Create/Edit Coupon
+  - Coupon code (required, unique)
+  - Description
+  - Discount type (Percentage % or Fixed $)
+  - Discount value (required)
+  - Minimum purchase amount (optional)
+  - Maximum discount (optional)
+  - Usage limit per customer (optional)
+  - Total usage limit (optional)
+  - Valid date range (from/to)
+  - Applicable products (all or specific)
+  - Applicable categories (optional)
+  - Exclude products (optional)
+  - Customer eligibility (all or specific segments)
+  - Active/Inactive toggle
+  - Save coupon button
+
+✓ Promotions List
+  - Table view with same fields as coupons
+  - Promotion types: Percentage discount, Fixed discount, Buy X Get Y, Free shipping
+
+✓ Create Promotion
+  - Promotion name
+  - Type (same as coupons)
+  - Discount details
+  - Date range
+  - Applicable conditions
+  - Automatic application toggle (doesn't require code)
+  - Priority order (when multiple promotions apply)
+
+
+SETTINGS & CONFIGURATION - Admin Settings
+-------------------------------------------
+✓ General Settings
+  - Store name (editable)
+  - Store logo upload
+  - Store description
+  - Timezone
+  - Currency
+  - Language
+
+✓ Shipping Settings
+  - Shipping methods management:
+    * Method name (Standard, Express, etc.)
+    * Base rate
+    * Minimum/Maximum order amount
+    * Free shipping threshold
+    * Delivery time estimate (days)
+  - Add new shipping method button
+  - Edit/Delete existing methods
+  - Tax on shipping toggle
+
+✓ Tax Settings
+  - Tax rate (global percentage)
+  - Tax by region/state (if US)
+  - Tax-exempt products/categories (checkboxes)
+  - Tax calculation method (inclusive/exclusive)
+
+✓ Payment Settings
+  - Stripe API keys input (test/live)
+  - Enabled payment methods (Stripe, PayPal, etc.)
+  - Test/Production mode toggle
+  - Webhook configuration
+
+✓ Email Settings
+  - Email sender address
+  - Email sender name
+  - Resend API key
+  - Email notification templates (preview)
+  - Test email button
+
+✓ Security Settings
+  - Admin IP whitelist (optional)
+  - Session timeout duration
+  - Two-factor authentication enforcement
+  - Admin user management (add/remove/permissions)
+
+✓ Store Notifications
+  - Low stock alert email toggle
+  - New order notification email
+  - Customer review alert toggle
+  - Choose recipient emails
+
+
+REPORTS & ANALYTICS - Business Intelligence
+---------------------------------------------
+✓ Revenue Report
+  - Total revenue (configurable date range)
+  - Revenue breakdown by day/week/month
+  - Revenue by category (pie chart)
+  - Revenue by top products (bar chart)
+  - Revenue growth trend (line graph)
+  - Export to CSV/PDF
+
+✓ Sales Report
+  - Total orders (date range)
+  - Orders breakdown by day
+  - Average order value trend
+  - Orders by status breakdown
+  - Top selling products
+  - Top selling categories
+
+✓ Customer Report
+  - Total customers (new vs returning)
+  - Customer lifetime value distribution
+  - Customer acquisition by month (line graph)
+  - Customer retention rate
+  - Customer segments breakdown
+
+✓ Product Report
+  - Top 20 products by sales
+  - Top 20 products by revenue
+  - Products with most returns
+  - Low performing products
+  - Inventory aging (products not sold recently)
+
+✓ Custom Report Builder
+  - Select date range
+  - Select metrics (revenue, orders, customers, etc.)
+  - Group by (day, week, month, category, product)
+  - Filter options
+  - Generate and export
+
+
+EMAIL & NOTIFICATIONS - Communication Hub
+-------------------------------------------
+✓ Email Templates List
+  - Order confirmation email
+  - Shipping notification
+  - Delivery confirmation
+  - Password reset
+  - Welcome email
+  - Review request email
+  - Edit/Preview each template
+
+✓ Email Template Editor
+  - Visual editor with WYSIWYG
+  - Email subject line
+  - Preview on desktop/mobile
+  - Preview with sample data
+  - Test send to admin email
+  - Save template
+
+✓ Email Campaigns
+  - Create marketing email campaign
+  - Select recipients (all customers, segment, list)
+  - Choose template or create new
+  - Schedule send time
+  - Send immediately or schedule
+  - Track open rates (simple)
+
+
+ADMIN USERS & PERMISSIONS - Team Control
+------------------------------------------
+✓ Admin Users List
+  - Table view:
+    * Username
+    * Email
+    * Role (Super Admin, Manager, Support)
+    * Status (Active/Inactive)
+    * Last login
+    * Actions: Edit, Deactivate, Delete
+
+✓ Create/Edit Admin User
+  - Name
+  - Email
+  - Username
+  - Password (auto-generate or set custom)
+  - Role selection (with permission levels)
+  - Permissions granular control:
+    * View orders, Edit orders, Delete orders
+    * View products, Add product, Edit products, Delete products
+    * View customers, Edit customers
+    * View analytics
+    * Manage promotions
+    * Manage settings
+  - Active/Inactive toggle
+  - Save changes
+
+✓ Admin Activity Log
+  - Actions by admin user
+  - Timestamp
+  - What was changed (product name, price, etc.)
+  - Before/After values
+  - Filter by user, action type, date
+  - Export to CSV
+
+
+================================================================================
+UI/UX PRINCIPLES - Gorgeous & Professional
+================================================================================
+
+Design System
+- Color scheme: Modern, professional (primary color + neutrals)
+- Typography: Clean, readable (Geist or Inter font)
+- Spacing: Consistent 8px grid system
+- Shadows: Subtle depth (no harsh shadows)
+- Borders: Subtle gray for subtle separation
+- Icons: Lucide icons (consistent, clean)
+
+Components (shadcn/ui based)
+- Buttons: Multiple states (default, hover, active, disabled, loading)
+- Forms: Clean labels, error messages in red, success in green
+- Cards: Subtle shadows, proper padding
+- Modals: Dark overlay, centered, smooth animation
+- Dropdowns: Smooth open/close animation
+- Tables: Zebra striping, hover rows, sortable headers
+- Alerts: Color-coded (green=success, red=error, yellow=warning, blue=info)
+
+Mobile Experience
+- Touch-friendly tap targets (minimum 44x44px)
+- Full-screen drawers for menus
+- Swipe gestures for navigation
+- Readable font sizes (minimum 16px on mobile)
+- Responsive images
+- Collapsible sections to reduce scrolling
+
+Animations & Interactions
+- Smooth page transitions (200-300ms)
+- Hover effects on interactive elements
+- Loading states with spinners
+- Success/error animations
+- Scroll animations (fade in on scroll)
+- Form validation feedback (real-time)
+
+Accessibility
+- WCAG 2.1 AA compliant
+- Keyboard navigation support
+- Screen reader friendly
+- Color contrast ratios met
+- Focus indicators visible
+- Alt text on all images
+
+
+================================================================================
+WHAT WE'RE NOT DOING
+================================================================================
+❌ AI/ML/recommender engines
+❌ Redis caching
+❌ Docker/Kubernetes
+❌ Advanced analytics dashboards (basic analytics only)
+❌ Multi-vendor marketplace
+❌ AR/3D preview
+❌ Live chat / chatbot
+❌ Background job queues
+❌ Complex microservices
+❌ Webhooks (not needed for MVP)
+
+Keep it simple. Build it beautiful. Full control in admin panel.
+
+2. Advanced Product Features
+   - Product variants (size, color, material) with inventory tracking
+   - Product bundles and kits
+   - Virtual try-on (AR/3D models)
+   - Product comparison tool
+   - Related products and "Frequently bought together"
+   - Pre-orders and waitlists
+   - Product Q&A section
+   - Video reviews and user-generated content
+
+3. Marketing & Growth
+   - Referral program with tracking
+   - Loyalty points and rewards system
+   - Gift cards and store credit
+   - Email marketing automation
+   - SMS marketing campaigns
+   - Push notifications (web push)
+   - Exit-intent popups
+   - Social proof widgets (recent purchases, live visitors)
+   - Influencer/affiliate program portal
+
+4. Enhanced Checkout & Payments
+   - One-click checkout (saved addresses/cards)
+PROJECT STRUCTURE (ORGANIZED & SCALABLE)
+========================================
+
+Frontend (Next.js + React)
+-------------------------
+app/
+  layout.tsx              # Root layout with navbar, footer
+  page.tsx                # Homepage (hero, featured, categories, testimonials)
+  not-found.tsx
+  error.tsx
+  
+  (public)/
+    shop/
+      page.tsx            # Shop with filters, sort, pagination
+      [category]/page.tsx # Category-specific shop
+    product/
+      [id]/
+        page.tsx          # Product detail (images, options, reviews, related)
+        reviews/page.tsx  # All reviews for product
+    cart/
+      page.tsx            # Shopping cart full page
+    checkout/
+      page.tsx            # Multi-step checkout (4 steps)
+      success/page.tsx    # Order confirmation
+      failed/page.tsx     # Payment failed
+    account/
+      layout.tsx          # Account sidebar layout
+      profile/page.tsx    # User profile/settings
+      orders/page.tsx     # Order history
+      orders/[id]/page.tsx # Order detail
+      wishlist/page.tsx   # Wishlist
+      addresses/page.tsx  # Address book
+      notifications/page.tsx # Email preferences
+    
+    auth/
+      login/page.tsx      # Login form
+      signup/page.tsx     # Signup form
+      forgot-password/page.tsx
+      reset-password/[token]/page.tsx
+      verify-email/[token]/page.tsx
+    
+    about/page.tsx        # About page
+    contact/page.tsx      # Contact page
+  
+  admin/
+    layout.tsx            # Admin layout with sidebar
+    dashboard/page.tsx    # Admin dashboard (KPIs, charts, activity)
+    
+    products/
+      page.tsx            # Products list (table, filters, bulk actions)
+      new/page.tsx        # Create product form
+      [id]/
+        edit/page.tsx     # Edit product form
+        import/page.tsx   # CSV import
+    
+    orders/
+      page.tsx            # Orders list (table, filters, search)
+      [id]/page.tsx       # Order detail, status updates, actions
+    
+    customers/
+      page.tsx            # Customers list (table, search, filters)
+      [id]/page.tsx       # Customer detail, stats, orders
+    
+    inventory/
+      page.tsx            # Inventory management (stock levels)
+      adjustments/page.tsx # Stock adjustment history
+    
+    discounts/
+      page.tsx            # Coupons & promotions list
+      coupons/new/page.tsx
+      coupons/[id]/edit/page.tsx
+      promotions/new/page.tsx
+    
+    settings/
+      page.tsx            # General settings
+      shipping/page.tsx   # Shipping settings
+      taxes/page.tsx      # Tax settings
+      payments/page.tsx   # Payment gateway settings
+      email/page.tsx      # Email settings
+      users/page.tsx      # Admin users & permissions
+      notifications/page.tsx # Notification preferences
+    
+    reports/
+      page.tsx            # Analytics & reports
+      revenue/page.tsx    # Revenue report
+      sales/page.tsx      # Sales report
+      customers/page.tsx  # Customer report
+      products/page.tsx   # Product report
+    
+    emails/
+      page.tsx            # Email templates & campaigns
+      templates/page.tsx
+      campaigns/new/page.tsx
+    
+    activity-log/page.tsx # Admin activity log
+
+components/
+  ui/                     # shadcn/ui components
+    button.tsx
+    card.tsx
+    input.tsx
+    form.tsx
+    modal.tsx
+    table.tsx
+    tabs.tsx
+    dropdown.tsx
+    etc...
+  
+  layout/
+    Navbar.tsx           # Top navigation
+    Footer.tsx           # Footer
+    Sidebar.tsx          # Admin sidebar
+  
+  home/
+    HeroBanner.tsx       # Hero section with animation
+    FeaturedProducts.tsx # Featured carousel
+    CategoryGrid.tsx     # Category cards
+    Testimonials.tsx     # Review carousel
+    Newsletter.tsx       # Email signup
+  
+  shop/
+    FilterSidebar.tsx    # Product filters
+    ProductGrid.tsx      # Product cards grid
+    ProductCard.tsx      # Individual product card
+    SortDropdown.tsx     # Sort options
+    Pagination.tsx       # Pagination controls
+  
+  product/
+    ProductGallery.tsx   # Image gallery with zoom
+    ProductOptions.tsx   # Color, size, quantity selectors
+    ProductReviews.tsx   # Reviews section
+    ReviewForm.tsx       # Add review modal
+    RelatedProducts.tsx  # Related products carousel
+  
+  cart/
+    CartItem.tsx         # Individual cart item
+    CartSummary.tsx      # Cart totals sidebar
+    CouponInput.tsx      # Coupon code input
+  
+  checkout/
+    CheckoutForm.tsx     # Multi-step form
+    AddressForm.tsx      # Address input
+    ShippingOptions.tsx  # Shipping method selection
+    PaymentForm.tsx      # Stripe card input
+    OrderReview.tsx      # Final order review
+    OrderConfirmation.tsx # Success page
+  
+  auth/
+    LoginForm.tsx        # Login form
+    SignupForm.tsx       # Signup form
+    SocialLogin.tsx      # Google/Facebook login
+    PasswordStrength.tsx # Password strength indicator
+  
+  admin/
+    DashboardKPIs.tsx    # KPI cards
+    SalesChart.tsx       # Revenue chart
+    OrdersChart.tsx      # Orders breakdown
+    ProductsTable.tsx    # Products management table
+    OrdersTable.tsx      # Orders management table
+    CustomersTable.tsx   # Customers table
+    BulkActionsBar.tsx   # Bulk action toolbar
+    DataTableFilter.tsx  # Generic table filters
+  
+  common/
+    LoadingSpinner.tsx
+    ErrorMessage.tsx
+    SuccessAlert.tsx
+    ConfirmDialog.tsx
+    ImageUpload.tsx
+    RichTextEditor.tsx
+
+hooks/
+  useCart.ts            # Cart state & operations
+  useAuth.ts            # Auth state & user
+  useWishlist.ts        # Wishlist operations
+  usePagination.ts      # Pagination logic
+  useFilters.ts         # Filter state
+  useLocalStorage.ts    # localStorage helper
+  
+lib/
+  api.ts                # API client (fetch wrapper)
+  stripe.ts             # Stripe helpers
+  validators.ts         # Form validation functions
+  utils.ts              # Utility functions
+  cn.ts                 # classname helper
+
+styles/
+  globals.css           # Tailwind + global styles
+  animations.css        # Keyframe animations
+
+types/
+  index.d.ts            # Global types
+  product.ts            # Product interface
+  order.ts              # Order interface
+  user.ts               # User interface
+  
+public/
+  images/               # Static images
+  icons/                # Icon files
+
+Backend (Node.js + Express + TypeScript)
+----------------------------------------
+src/
+  server.ts             # Main server entry
+  app.ts                # Express app setup
+  
+  config/
+    database.ts         # PostgreSQL connection
+    stripe.ts           # Stripe config
+    resend.ts           # Resend email config
+    env.ts              # Environment variables
+  
+  routes/
+    index.ts            # Route aggregator
+    auth.ts             # POST /auth/login, /auth/signup, etc.
+    products.ts         # GET /products, POST /products (admin), etc.
+    orders.ts           # GET /orders, POST /orders, etc.
+    cart.ts             # POST /cart/add, /cart/remove, etc.
+    customers.ts        # GET /customers, POST /customers, etc.
+    reviews.ts          # GET /reviews, POST /reviews
+    wishlist.ts         # GET /wishlist, POST /wishlist
+    coupons.ts          # GET /coupons, POST /coupons (admin)
+    admin.ts            # Admin routes aggregator
+    webhook.ts          # Stripe webhooks
+  
+  controllers/
+    authController.ts   # Login, signup, auth logic
+    productController.ts # Product CRUD
+    orderController.ts  # Order creation, updates
+    customerController.ts
+    reviewController.ts
+  
+  middleware/
+    auth.ts             # JWT verification
+    adminAuth.ts        # Admin role check
+    errorHandler.ts     # Global error handling
+    validation.ts       # Request validation
+    rateLimiter.ts      # Rate limiting
+    cors.ts             # CORS configuration
+  
+  models/
+    User.ts             # User entity & queries
+    Product.ts          # Product entity & queries
+    Order.ts            # Order entity & queries
+    OrderItem.ts        # Order item entity
+    Review.ts           # Review entity
+    Wishlist.ts         # Wishlist entity
+    Coupon.ts           # Coupon entity
+    Inventory.ts        # Stock tracking
+  
+  services/
+    authService.ts      # Auth business logic
+    productService.ts   # Product business logic
+    orderService.ts     # Order processing
+    stripeService.ts    # Stripe integration
+    emailService.ts     # Email sending (Resend)
+    inventoryService.ts # Stock management
+  
+  utils/
+    db.ts               # Database helper functions
+    jwt.ts              # JWT helper functions
+    validators.ts       # Input validation helpers
+    errors.ts           # Custom error classes
+    logger.ts           # Logging utility
+    hash.ts             # Password hashing (bcrypt)
+  
+  types/
+    index.d.ts          # Global types
+    express.d.ts        # Express type extensions
+  
+  tests/
+    auth.test.ts        # Auth endpoint tests
+    products.test.ts    # Product endpoint tests
+    orders.test.ts      # Order endpoint tests
+
+Database (PostgreSQL Schema)
+----------------------------
+Tables:
+  users (id, name, email, password_hash, created_at, updated_at)
+  
+  products (id, name, description, price, cost_price, discount_price,
+            sku, category, stock, status, image_url, created_at)
+  
+  product_variants (id, product_id, name, color, size, stock, price_override)
+  
+  orders (id, user_id, status, total, shipping_address, billing_address,
+          created_at, updated_at)
+  
+  order_items (id, order_id, product_id, quantity, price, variant_id)
+  
+  reviews (id, product_id, user_id, rating, text, created_at)
+  
+  wishlist (id, user_id, product_id, created_at)
+  
+  coupons (id, code, discount_type, discount_value, min_purchase,
+           max_uses, valid_from, valid_to)
+  
+  inventory (id, product_id, quantity, low_stock_threshold)
+  
+  admin_users (id, email, role, permissions, created_at)
+  
+Indexes on: email, sku, category, user_id, product_id, created_at
+
+DEPLOYMENT STACK
+----------------
+Frontend:
+  - Vercel (Next.js hosting, automatic deployments from git)
+  - CDN for images (Vercel's built-in)
+
+Backend:
+  - Railway.app or Render.com
+  - PostgreSQL hosting (managed database)
+  - Environment variables for secrets
+
+CI/CD:
+  - GitHub Actions for linting, tests on PR
+  - Automatic deploy on merge to main
